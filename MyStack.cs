@@ -23,5 +23,46 @@ class MyStack : Stack
             EnablePartitioning = false,
             DefaultMessageTtl = System.Xml.XmlConvert.ToString(TimeSpan.FromSeconds(30))
         });
+
+        var appServicePlan = new Azure.AppService.Plan("testConsumptionPlan", new Azure.AppService.PlanArgs
+        {
+            ResourceGroupName = resourceGroup.Name,
+            Kind = "FunctionApp",
+            Sku = new Azure.AppService.Inputs.PlanSkuArgs
+            {
+                Tier = "Dynamic",
+                Size = "Y1"
+            }
+        });
+
+        var functionStorage = new Azure.Storage.Account("testFuncStorage", new Azure.Storage.AccountArgs
+        {
+            ResourceGroupName = resourceGroup.Name,
+            AccountReplicationType = "LRS",
+            AccountTier = "Standard"
+        });
+
+        var appInsights = new Azure.AppInsights.Insights("testAppInsights", new Azure.AppInsights.InsightsArgs
+        {
+            ResourceGroupName = resourceGroup.Name,
+            RetentionInDays = 30,
+            ApplicationType = "web",
+            Location = "uksouth"
+        });
+
+        var functionApp = new Azure.AppService.FunctionApp("testFunctionApp", new Azure.AppService.FunctionAppArgs
+        {
+            AppServicePlanId = appServicePlan.Id,
+            ResourceGroupName = resourceGroup.Name,
+            StorageConnectionString = functionStorage.PrimaryConnectionString,
+            Version = "~3",
+            AppSettings = { { "APPINSIGHTS_INSTRUMENTATIONKEY", appInsights.InstrumentationKey } },
+            ConnectionStrings = new Azure.AppService.Inputs.FunctionAppConnectionStringsArgs
+            {
+                Name = "ServiceBusConnection",
+                Value = serviceBusNamespace.DefaultPrimaryConnectionString,
+                Type = "ServiceBus"
+            }
+        });
     }
 }
