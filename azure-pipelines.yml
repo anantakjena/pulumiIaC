@@ -1,0 +1,25 @@
+name: PulumiIaC-CI
+
+pr:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  pulumiProject : 'pulumicIaC.csproj'
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: dotnet restore
+  inputs:
+    command: 'restore'
+    projects: $(pulumiProject)
+    feedsToUse: 'select'
+
+- task: DotNetCoreCLI@2
+  displayName: dotnet build
+  inputs:
+    command: 'build'
+    projects: $(pulumiProject)
+    arguments: '--nologo -c Release'
