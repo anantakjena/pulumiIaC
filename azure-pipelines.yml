@@ -39,4 +39,4 @@ steps:
   inputs:
     azureSubscription: 'azure-vsenterprise-subscription'
     command: 'up'
-    stack: 'pulumiStack'
+    stack: $(pulumiStack)
