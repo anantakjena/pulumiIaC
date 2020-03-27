@@ -23,3 +23,10 @@ steps:
     command: 'build'
     projects: $(pulumiProject)
     arguments: '--nologo -c Release'
+
+- task: Pulumi@1
+  inputs:
+    azureSubscription: 'azure-vsenterprise-subscription'
+    command: 'preview'
+    stack: 'vigneshmsft/pulumiIaC/dev'
+    createStack: true
