@@ -8,6 +8,7 @@ pool:
 
 variables:
   pulumiProject : 'pulumicIaC.csproj'
+  pulumiStack : 'vigneshmsft/pulumiIaC/dev'
 
 steps:
 - task: DotNetCoreCLI@2
@@ -25,8 +26,17 @@ steps:
     arguments: '--nologo -c Release'
 
 - task: Pulumi@1
+  displayName: pulumi preview
   inputs:
     azureSubscription: 'azure-vsenterprise-subscription'
     command: 'preview'
-    stack: 'vigneshmsft/pulumiIaC/dev'
+    stack: $(pulumiStack)
     createStack: true
+
+- task: Pulumi@1
+  displayName: pulumi update
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  inputs:
+    azureSubscription: 'azure-vsenterprise-subscription'
+    command: 'up'
+    stack: 'pulumiStack'
