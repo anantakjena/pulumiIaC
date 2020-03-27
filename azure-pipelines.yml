@@ -1,0 +1,19 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'restore'
+    projects: '**/*.csproj'
+    feedsToUse: 'select'
+
+- task: DotNetCoreCLI@2
+  displayName: dotnet build
+  inputs:
+    command: 'build'
+    projects: '**/*.sln'    
+    arguments: '--nologo -c Release'
