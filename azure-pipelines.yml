@@ -18,12 +18,28 @@ steps:
     projects: $(pulumiProject)
     feedsToUse: 'select'
 
+- task: SonarCloudPrepare@1
+  displayName: Prepare SonarCloud
+  inputs:
+    SonarCloud: 'Sample SonarCloud'
+    organization: 'vigneshnatraj-cap'
+    scannerMode: 'MSBuild'
+    projectKey: 'pulumiIaC'    
+
 - task: DotNetCoreCLI@2
   displayName: dotnet build
   inputs:
     command: 'build'
     projects: $(pulumiProject)
     arguments: '--nologo -c Release'
+
+- task: SonarCloudAnalyze@1
+  displayName: Run Sonar Cloud Analysis
+
+- task: SonarCloudPublish@1
+  displayName: Publish Analysis Results to Sonar Cloud
+  inputs:
+    pollingTimeoutSec: '300'
 
 - task: Pulumi@1
   displayName: pulumi preview
